@@ -1,18 +1,27 @@
 {
   "name": "rooteen",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.1.0",
+  "description": "simple, efficient, and easy-to-use web application to manage daily tasks",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Farris Goldstein",
+  "license": "MIT",
   "dependencies": {
     "body-parser": "^1.20.2",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
     "node-cron": "^3.0.2"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JustinFarris/rooteen.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JustinFarris/rooteen/issues"
+  },
+  "homepage": "https://github.com/JustinFarris/rooteen#readme"
 }
