@@ -11,36 +11,15 @@
         <input type="text" name="taskName" placeholder="Task name">
         <button type="submit">ADD</button>
     </form>
-    <h2>UNSTARTED</h2>
-    <div id="unstarted-tasks">
-        <% tasks.filter(task => task.status === 'UNSTARTED').forEach(task => { %>
-            <div style="color: <%= task.color %>">
-                <%= task.name %>
-                <button onclick="if (confirmDelete()) { location.href='/delete-task?taskId=<%= task.id %>' }">DELETE</button>
-                <button onclick="location.href='/action?taskId=<%= task.id %>'"><%= task.action %></button>
-            </div>
-        <% }) %>
-    </div>
-    <h2>STARTED</h2>
-    <div id="started-tasks">
-        <% tasks.filter(task => task.status === 'STARTED').forEach(task => { %>
-            <div style="color: <%= task.color %>">
-                <%= task.name %>
-                <button onclick="if (confirmDelete()) { location.href='/delete-task?taskId=<%= task.id %>' }">DELETE</button>
-                <button onclick="location.href='/action?taskId=<%= task.id %>'"><%= task.action %></button>
-            </div>
-        <% }) %>
-    </div>
-    <h2>COMPLETE</h2>
-    <div id="completed-tasks">
-        <% tasks.filter(task => task.status === 'COMPLETE').forEach(task => { %>
-            <div style="color: <%= task.color %>">
-                <%= task.name %>
-                <button onclick="if (confirmDelete()) { location.href='/delete-task?taskId=<%= task.id %>' }">DELETE</button>
-                <button onclick="location.href='/action?taskId=<%= task.id %>'"><%= task.action %></button>
-            </div>
-        <% }) %>
-    </div>
+    <% const statuses = ['UNSTARTED', 'STARTED', 'COMPLETE']; %>
+    <% statuses.forEach(status => { %>
+        <h2><%= status %></h2>
+        <div id="<%= status.toLowerCase() %>-tasks">
+            <% tasks.filter(task => task.status === status).forEach(task => { %>
+                <%- include('task.ejs', { task: task }) %>
+            <% }) %>
+        </div>
+    <% }) %>
     <h2>Archived Tasks</h2>
     <div id="archived-tasks">
         <% archivedTasks.forEach(task => { %>
