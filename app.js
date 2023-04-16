@@ -11,6 +11,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 
 const tasksFile = 'tasks.json';
+const tasksFilePath = 'tasks.json';
 
 if (!fs.existsSync(tasksFile)) {
     const defaultTasks = [
@@ -22,12 +23,96 @@ if (!fs.existsSync(tasksFile)) {
     fs.writeFileSync(tasksFile, JSON.stringify(defaultTasks));
 }
 
+function saveTasksToFile(tasks, callback) {
+  fs.writeFile(tasksFilePath, JSON.stringify(tasks), (err) => {
+    if (err) {
+      console.error('Error writing tasks to file:', err);
+      callback(err);
+    } else {
+      console.log('Tasks saved to file');
+      callback(null);
+    }
+  });
+}
+
 app.get('/', (req, res) => {
     const tasksData = JSON.parse(fs.readFileSync(tasksFile));
     const { tasks, archivedTasks } = prepareTasks(tasksData);
     res.render('index', { tasks, archivedTasks });
 });
 
+app.get('/admin', (req, res) => {
+  loadTasksFromFile((err, tasks) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error loading tasks');
+      return;
+    }
+    res.render('admin', { tasks: tasks });
+  });
+});
+
+app.get('/admin/edit-task/:taskId', (req, res) => {
+  const taskId = Number(req.params.taskId);
+
+  loadTasksFromFile((err, tasks) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error loading tasks');
+      return;
+    }
+
+    const task = tasks.find(t => t.id === taskId);
+
+    if (!task) {
+      res.status(404).send('Task not found');
+      return;
+    }
+
+    res.render('edit-task', { task: task });
+  });
+});
+
+app.post('/admin/save-task', (req, res) => {
+  const taskId = Number(req.body.id);
+  const updatedTask = {
+    id: taskId,
+    name: req.body.name,
+    status: req.body.status,
+    class: req.body.class,
+  };
+
+  console.log('Updated Task:', updatedTask);
+
+  loadTasksFromFile((err, tasks) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error loading tasks');
+      return;
+    }
+
+    console.log('Tasks:', tasks);
+
+    const taskIndex = tasks.findIndex(t => t.id === taskId);
+    console.log('Task index:', taskIndex);
+
+    if (taskIndex === -1) {
+      res.status(404).send('Task not found');
+      return;
+    }
+
+    tasks.splice(taskIndex, 1, updatedTask);
+    saveTasksToFile(tasks, (err) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error saving tasks');
+        return;
+      }
+      res.redirect('/admin');
+    });
+  });
+});
+ 
 app.post('/add-task', (req, res) => {
     const taskName = req.body.taskName;
     
@@ -98,6 +183,41 @@ app.get('/readd-task', (req, res) => {
     res.redirect('/');
 });
 
+// Add this function to your existing code in app.js
+function generateUniqueId() {
+  return '_' + Math.random().toString(36).substr(2, 9);
+}
+
+function addTask(name) {
+  tasks.push({
+    id: generateUniqueId(),
+    name: name,
+    status: 'UNSTARTED',
+    class: 'CUSTOM',
+  });
+}
+
+function loadTasksFromFile(callback) {
+  fs.readFile(tasksFilePath, 'utf8', (err, data) => {
+    if (err) {
+      if (err.code === 'ENOENT') {
+        // File not found, return an empty list of tasks
+        callback(null, []);
+      } else {
+        callback(err);
+      }
+      return;
+    }
+
+    try {
+      const tasks = JSON.parse(data);
+      callback(null, tasks);
+    } catch (parseErr) {
+      callback(parseErr);
+    }
+  });
+}
+
 function prepareTasks(tasksData) {
 const tasks = [];
 const archivedTasks = [];
@@ -113,6 +233,16 @@ tasksData.forEach(task => {
 });
 
 return { tasks, archivedTasks };
+}
+
+function reset() {
+  tasks.forEach(task => {
+    if (task.class === 'DEFAULT') {
+      task.status = 'UNSTARTED';
+    } else if (task.class === 'CUSTOM') {
+      task.class = 'ARCHIVED';
+    }
+  });
 }
 
 function resetTasks() {
