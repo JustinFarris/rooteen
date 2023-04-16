@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Tasks</title>
+</head>
+<body>
+    <h1>Daily Tasks</h1>
+    <form action="/add-task" method="POST">
+        <input type="text" name="taskName" placeholder="Task name">
+        <button type="submit">ADD</button>
+    </form>
+    <h2>UNSTARTED</h2>
+    <div id="unstarted-tasks">
+        <% tasks.filter(task => task.status === 'UNSTARTED').forEach(task => { %>
+            <div style="color: <%= task.color %>">
+                <%= task.name %>
+                <button onclick="if (confirmDelete()) { location.href='/delete-task?taskId=<%= task.id %>' }">DELETE</button>
+                <button onclick="location.href='/action?taskId=<%= task.id %>'"><%= task.action %></button>
+            </div>
+        <% }) %>
+    </div>
+    <h2>STARTED</h2>
+    <div id="started-tasks">
+        <% tasks.filter(task => task.status === 'STARTED').forEach(task => { %>
+            <div style="color: <%= task.color %>">
+                <%= task.name %>
+                <button onclick="if (confirmDelete()) { location.href='/delete-task?taskId=<%= task.id %>' }">DELETE</button>
+                <button onclick="location.href='/action?taskId=<%= task.id %>'"><%= task.action %></button>
+            </div>
+        <% }) %>
+    </div>
+    <h2>COMPLETE</h2>
+    <div id="completed-tasks">
+        <% tasks.filter(task => task.status === 'COMPLETE').forEach(task => { %>
+            <div style="color: <%= task.color %>">
+                <%= task.name %>
+                <button onclick="if (confirmDelete()) { location.href='/delete-task?taskId=<%= task.id %>' }">DELETE</button>
+                <button onclick="location.href='/action?taskId=<%= task.id %>'"><%= task.action %></button>
+            </div>
+        <% }) %>
+    </div>
+    <h2>Archived Tasks</h2>
+    <div id="archived-tasks">
+        <% archivedTasks.forEach(task => { %>
+            <div>
+                <%= task.name %>
+                <button onclick="if (confirmDelete()) { location.href='/delete-task?taskId=<%= task.id %>' }">DELETE</button>
+                <button onclick="location.href='/readd-task?taskId=<%= task.id %>'">RE-ADD</button>
+            </div>
+        <% }) %>
+    </div>
+    <script>
+        function confirmDelete() {
+            return confirm('Are you sure you want to delete this task?');
+        }
+    </script>
+</body>
+</html>
+
