@@ -235,6 +235,7 @@ tasksData.forEach(task => {
 return { tasks, archivedTasks };
 }
 
+/* I think this is unused, delete it
 function reset() {
   tasks.forEach(task => {
     if (task.class === 'DEFAULT') {
@@ -244,18 +245,19 @@ function reset() {
     }
   });
 }
+*/
 
 function resetTasks() {
-let tasks = JSON.parse(fs.readFileSync(tasksFile));
-tasks = tasks.map(task => {
-if (task.class === 'DEFAULT') {
-task.status = 'UNSTARTED';
-} else if (task.class === 'CUSTOM') {
-task.class = 'ARCHIVED';
-}
-return task;
-});
-fs.writeFileSync(tasksFile, JSON.stringify(tasks));
+  let tasks = JSON.parse(fs.readFileSync(tasksFile));
+  tasks = tasks.map(task => {
+    if (task.class === 'DEFAULT') {
+      task.status = 'UNSTARTED';
+    } else if (task.class === 'CUSTOM') {
+        task.class = 'ARCHIVED';
+    }
+  return task;
+  });
+  fs.writeFileSync(tasksFile, JSON.stringify(tasks));
 }
 
 cron.schedule('0 2 * * *', () => {
