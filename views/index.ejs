@@ -3,45 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RooTeen</title>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        .unstarted { color: blue; }
-        .unstarted-default { color: red; }
-        .started { color: orange; }
-        .complete { color: green; }
-    </style>
+    <title>Daily Tasks</title>
 </head>
 <body>
-    <h1>RooTeen</h1>
-    <form action="/add-task" method="post">
-        <input type="text" name="name" placeholder="Enter a new task" required>
+    <h1>Daily Tasks</h1>
+    <form action="/add-task" method="POST">
+        <input type="text" name="taskName" placeholder="Task name">
         <button type="submit">ADD</button>
     </form>
-    
-    <% ['UNSTARTED', 'STARTED', 'COMPLETE'].forEach(status => { %>
-        <div>
-            <h2><%= status %></h2>
-            <% tasks.filter(task => task.status === status && (task.class === 'DEFAULT' || task.class === 'CUSTOM')).forEach(task => { %>
-                <p class="<%= task.status.toLowerCase() %><%= task.class === 'DEFAULT' ? '-default' : '' %>">
-                    <%= task.name %>
-                    <button onclick="location.href='/delete-task?id=<%= task.id %>'" type="button">DELETE</button>
-                    <button onclick="location.href='/action-task?id=<%= task.id %>'" type="button">
-                        <%= task.status === 'UNSTARTED' ? 'START' : (task.status === 'STARTED' ? 'COMPLETE' : 'RESET') %>
-                    </button>
-                </p>
-            <% }); %>
+    <% const statuses = ['UNSTARTED', 'STARTED', 'COMPLETE']; %>
+    <% statuses.forEach(status => { %>
+        <h2><%= status %></h2>
+        <div id="<%= status.toLowerCase() %>-tasks">
+            <% tasks.filter(task => task.status === status).forEach(task => { %>
+                <%- include('task.ejs', { task: task }) %>
+            <% }) %>
         </div>
-    <% }); %>
-
-    <h2>ARCHIVED</h2>
-    <% tasks.filter(task => task.class === 'ARCHIVED').sort((a, b) => a.name.localeCompare(b.name)).forEach(task => { %>
-        <p>
-            <%= task.name %>
-            <button onclick="location.href='/delete-task?id=<%= task.id %>'" type="button">DELETE</button>
-            <button onclick="location.href='/readd-task?id=<%= task.id %>'" type="button">RE-ADD</button>
-        </p>
-    <% }); %>
+    <% }) %>
+    <h2>Archived Tasks</h2>
+    <div id="archived-tasks">
+      <% archivedTasks.sort((a, b) => a.name.localeCompare(b.name)).forEach(task => { %>
+        <div>
+          <%= task.name %>
+          <button onclick="if (confirmDelete()) { location.href='/delete-task?taskId=<%= task.id %>' }">DELETE</button>
+          <button onclick="location.href='/readd-task?taskId=<%= task.id %>'">RE-ADD</button>
+        </div>
+      <% }) %>
+    </div>
+    <script>
+        function confirmDelete() {
+            return confirm('Are you sure you want to delete this task?');
+        }
+    </script>
 </body>
 </html>
 
