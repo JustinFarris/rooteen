@@ -34,19 +34,17 @@
                 </tr>
             </thead>
             <tbody>
-                <% tasks.forEach(task => { %>
-                    <% if (section.filter(task)) { %>
-                        <tr>
-                            <td><span style="color: <%= sections[index].color %>;"><%= task.name %></span></td>
-                            <td><%= task.status %></td>
-                            <td><%= task.dateAdded %></td>
-                            <td>
-                                <button onclick="location.href='/start-task?taskId=<%= task.id %>'">START</button>
-                                <button onclick="location.href='/complete-task?taskId=<%= task.id %>'">COMPLETE</button>
-                                <button onclick="location.href='/delete-task?taskId=<%= task.id %>'">DELETE</button>
-                            </td>
-                        </tr>
-                    <% } %>
+                <% tasks.filter(task => section.filter(task) && task.class !== 'ARCHIVED').forEach(task => { %>
+                    <tr>
+                        <td><span style="color: <%= sections[index].color %>;"><%= task.name %></span></td>
+                        <td><%= task.status %></td>
+                        <td><%= task.dateAdded %></td>
+                        <td>
+                            <button onclick="location.href='/start-task?taskId=<%= task.id %>'">START</button>
+                            <button onclick="location.href='/complete-task?taskId=<%= task.id %>'">COMPLETE</button>
+                            <button onclick="location.href='/delete-task?taskId=<%= task.id %>'">DELETE</button>
+                        </td>
+                    </tr>
                 <% }) %>
             </tbody>
         </table>
