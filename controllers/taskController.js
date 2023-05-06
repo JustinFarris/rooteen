@@ -10,15 +10,15 @@ exports.getTasks = (req, res) => {
   const sections = [
     {
       title: 'Unstarted Tasks',
-      filter: task => task.status === 'UNSTARTED' && !task.snoozed,
+      filter: task => task.status === 'UNSTARTED' && !task.snoozed && task.class !== 'ARCHIVED',
     },
     {
       title: 'Started Tasks',
-      filter: task => task.status === 'STARTED' && !task.snoozed,
+      filter: task => task.status === 'STARTED' && !task.snoozed && task.class !== 'ARCHIVED',
     },
     {
       title: 'Completed Tasks',
-      filter: task => task.status === 'COMPLETED' && !task.snoozed,
+      filter: task => task.status === 'COMPLETED' && !task.snoozed && task.class !== 'ARCHIVED',
     },
   ];
   res.render('index', { sections, archivedTasks, tasks });

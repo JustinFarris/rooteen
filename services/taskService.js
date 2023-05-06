@@ -14,7 +14,6 @@ const resetDailyTasks = () => {
     }
 
     if (task.snoozed) {
-      task.class = 'CUSTOM';
       task.status = 'UNSTARTED';
       task.snoozed = false;
     }
