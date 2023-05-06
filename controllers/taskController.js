@@ -98,3 +98,29 @@ exports.readdTask = (req, res) => {
   res.redirect('/');
 };
 
+exports.unstartTask = (req, res) => {
+  const taskId = parseInt(req.query.taskId, 10);
+  let tasks = taskService.readTasksFromFile();
+  tasks.forEach(task => {
+    if (task.id === taskId) {
+      task.status = 'UNSTARTED';
+    }
+  });
+  taskService.saveTasksToFile(tasks);
+
+  res.redirect('/');
+};
+
+exports.snoozeTask = (req, res) => {
+  const taskId = req.body.taskId;
+  const tasks = taskService.readTasksFromFile();
+  const task = tasks.find(task => task.id === taskId);
+
+  if (task) {
+    task.class = 'ARCHIVED';
+    task.snoozed = true;
+    taskService.saveTasksToFile(tasks);
+  }
+
+  res.redirect('/');
+};

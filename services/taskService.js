@@ -3,18 +3,20 @@ const path = require('path');
 
 const tasksFilePath = path.join(__dirname, '..', 'data', 'tasks.json');
 
-const resetDailyTasks = () => {
+function resetDailyTasks() {
   const tasks = readTasksFromFile();
-  const updatedTasks = tasks.map(task => {
+  tasks.forEach(task => {
     if (task.class === 'DEFAULT') {
-      return { ...task, status: 'UNSTARTED' };
-    } else if (task.class === 'CUSTOM') {
-      return { ...task, class: 'ARCHIVED' };
+      task.status = 'UNSTARTED';
+    } else if (task.snoozed) {
+      task.class = 'CUSTOM';
+      task.status = 'UNSTARTED';
+      task.snoozed = false;
     }
-    return task;
   });
-  saveTasksToFile(updatedTasks);
-};
+  saveTasksToFile(tasks);
+}
+
 
 function initializeTasksFile() {
   if (!fs.existsSync(tasksFilePath)) {

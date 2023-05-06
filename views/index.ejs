@@ -21,38 +21,48 @@
     <hr>
 
     <% const sections = [
-        {title: 'Unstarted Tasks', filter: task => task.status === 'UNSTARTED', color: 'blue'},
-        {title: 'Started Tasks', filter: task => task.status === 'STARTED', color: 'orange'},
-        {title: 'Completed Tasks', filter: task => task.status === 'COMPLETED', color: 'green'}
+        {title: 'Unstarted Tasks', filter: task => task.status === 'UNSTARTED' && task.class !== 'ARCHIVED', color: 'blue'},
+        {title: 'Started Tasks', filter: task => task.status === 'STARTED' && task.class !== 'ARCHIVED', color: 'orange'},
+        {title: 'Completed Tasks', filter: task => task.status === 'COMPLETED' && task.class !== 'ARCHIVED', color: 'green'}
     ]; %>
 
-    <% sections.forEach((section, index) => { %>
-        <h2><%= section.title %></h2>
-        <table id="section-<%= index %>">
-            <thead>
-                <tr>
-                    <th onclick="sortTable(<%= index %>, 0)">Name</th>
-                    <th onclick="sortTable(<%= index %>, 1)">Status</th>
-                    <th onclick="sortTable(<%= index %>, 2)">Date Added</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% tasks.filter(task => section.filter(task) && task.class !== 'ARCHIVED').forEach(task => { %>
-                    <tr>
-                        <td><span style="color: <%= sections[index].color %>;"><%= task.name %></span></td>
-                        <td><%= task.status %></td>
-                        <td><%= task.dateAdded %></td>
-                        <td>
-                            <button onclick="location.href='/start-task?taskId=<%= task.id %>'">START</button>
-                            <button onclick="location.href='/complete-task?taskId=<%= task.id %>'">COMPLETE</button>
-                            <button onclick="location.href='/delete-task?taskId=<%= task.id %>'">DELETE</button>
-                        </td>
-                    </tr>
-                <% }) %>
-            </tbody>
-        </table>
-    <% }) %>
+
+  <% sections.forEach((section, index) => { %>
+    <h2><%= section.title %></h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Date Added</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% tasks.forEach(task => { %>
+          <% if (section.filter(task)) { %>
+            <tr>
+              <td><span style="color: <%= sections[index].color %>;"><%= task.name %></span></td>
+              <td><%= task.status %></td>
+              <td><%= task.dateAdded %></td>
+              <td>
+                <% if (task.status === 'UNSTARTED') { %>
+                  <button onclick="location.href='/start-task?taskId=<%= task.id %>'">START</button>
+                <% } else if (task.status === 'STARTED') { %>
+                  <button onclick="location.href='/unstart-task?taskId=<%= task.id %>'">UNSTART</button>
+                <% } else if (task.status === 'COMPLETED') { %>
+                  <button onclick="location.href='/unstart-task?taskId=<%= task.id %>'">UNSTART</button>
+                <% } %>
+                <button onclick="location.href='/complete-task?taskId=<%= task.id %>'">COMPLETE</button>
+                <button onclick="location.href='/snooze-task?taskId=<%= task.id %>'">SNOOZE</button>
+                <button onclick="location.href='/delete-task?taskId=<%= task.id %>'">DELETE</button>
+              </td>
+            </tr>
+          <% } %>
+        <% }) %>
+      </tbody>
+    </table>
+  <% }) %>
 
     <h2>Archived Tasks</h2>
     <table id="archived">

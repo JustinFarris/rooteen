@@ -11,6 +11,8 @@ router.get('/add-task', taskController.addTask);
 router.post('/add-task', taskController.saveTask);
 router.get('/delete-task', taskController.deleteTask);
 router.get('/readd-task', taskController.readdTask);
+router.get('/unstart-task', taskController.unstartTask);
+router.post('/snooze-task', taskController.snoozeTask);
 
 module.exports = router;
 
