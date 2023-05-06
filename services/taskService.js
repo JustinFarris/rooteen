@@ -3,6 +3,19 @@ const path = require('path');
 
 const tasksFilePath = path.join(__dirname, '..', 'data', 'tasks.json');
 
+const resetDailyTasks = () => {
+  const tasks = readTasksFromFile();
+  const updatedTasks = tasks.map(task => {
+    if (task.class === 'DEFAULT') {
+      return { ...task, status: 'UNSTARTED' };
+    } else if (task.class === 'CUSTOM') {
+      return { ...task, status: 'ARCHIVED' };
+    }
+    return task;
+  });
+  saveTasksToFile(updatedTasks);
+};
+
 function initializeTasksFile() {
   if (!fs.existsSync(tasksFilePath)) {
     const initialTasks = [
@@ -39,5 +52,6 @@ module.exports = {
   readTasksFromFile,
   saveTasksToFile,
   generateId,
+  resetDailyTasks
 };
 

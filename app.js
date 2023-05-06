@@ -2,6 +2,19 @@ const express = require('express');
 const taskRoutes = require('./routes/taskRoutes');
 
 const app = express();
+
+const schedule = require('node-schedule');
+const taskService = require('./services/taskService');
+
+const dailyResetRule = new schedule.RecurrenceRule();
+dailyResetRule.hour = 2;
+dailyResetRule.minute = 0;
+
+schedule.scheduleJob(dailyResetRule, () => {
+  console.log('Performing daily reset');
+  taskService.resetDailyTasks();
+});
+
 app.use(express.urlencoded({ extended: true }));
 
 app.set('view engine', 'ejs');
