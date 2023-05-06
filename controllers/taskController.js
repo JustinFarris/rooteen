@@ -45,7 +45,19 @@ exports.completeTask = (req, res) => {
 };
 
 exports.addTask = (req, res) => {
-  res.render('add-task');
+  const newTask = {
+    id: taskService.generateId(),
+    name: req.body.taskName,
+    status: 'UNSTARTED',
+    class: 'CUSTOM',
+    dateAdded: new Date().toISOString().split('T')[0]
+  };
+
+  const tasks = taskService.readTasksFromFile();
+  tasks.push(newTask);
+  taskService.saveTasksToFile(tasks);
+
+  res.redirect('/');
 };
 
 exports.saveTask = (req, res) => {
