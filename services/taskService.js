@@ -9,7 +9,7 @@ const resetDailyTasks = () => {
     if (task.class === 'DEFAULT') {
       return { ...task, status: 'UNSTARTED' };
     } else if (task.class === 'CUSTOM') {
-      return { ...task, status: 'ARCHIVED' };
+      return { ...task, class: 'ARCHIVED' };
     }
     return task;
   });
