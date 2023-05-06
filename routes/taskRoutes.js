@@ -9,5 +9,6 @@ router.get('/complete-task', taskController.completeTask);
 router.get('/snooze-task', taskController.snoozeTask);
 router.get('/delete-task', taskController.deleteTask);
 router.get('/readd-task', taskController.readdTask);
+router.get('/reset-tasks', taskController.resetTasks);
 
 module.exports = router;

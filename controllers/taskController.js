@@ -2,10 +2,10 @@ const taskService = require('../services/taskService');
 
 exports.getTasks = (req, res) => {
   const tasks = taskService.readTasksFromFile();
-  console.log('All tasks:', tasks); // Debug log
+//  console.log('All tasks:', tasks); // Debug log
 
   const archivedTasks = tasks.filter(task => task.class === 'ARCHIVED' || task.snoozed);
-  console.log('Archived tasks:', archivedTasks); // Debug log
+//  console.log('Archived tasks:', archivedTasks); // Debug log
 
   const sections = [
     {
@@ -137,6 +137,7 @@ exports.snoozeTask = (req, res) => {
   res.redirect('/');
 };
 
-
-
-
+exports.resetTasks = (req, res) => {
+  taskService.resetDailyTasks();
+  res.redirect('/');
+};
