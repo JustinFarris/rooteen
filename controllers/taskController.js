@@ -2,23 +2,28 @@ const taskService = require('../services/taskService');
 
 exports.getTasks = (req, res) => {
   const tasks = taskService.readTasksFromFile();
-  const archivedTasks = tasks.filter(task => task.class === 'ARCHIVED');
+  console.log('All tasks:', tasks); // Debug log
+
+  const archivedTasks = tasks.filter(task => task.class === 'ARCHIVED' || task.snoozed);
+  console.log('Archived tasks:', archivedTasks); // Debug log
+
   const sections = [
     {
       title: 'Unstarted Tasks',
-      filter: task => task.status === 'UNSTARTED' && task.class !== 'ARCHIVED',
+      filter: task => task.status === 'UNSTARTED' && !task.snoozed,
     },
     {
       title: 'Started Tasks',
-      filter: task => task.status === 'STARTED' && task.class !== 'ARCHIVED',
+      filter: task => task.status === 'STARTED' && !task.snoozed,
     },
     {
       title: 'Completed Tasks',
-      filter: task => task.status === 'COMPLETED' && task.class !== 'ARCHIVED',
+      filter: task => task.status === 'COMPLETED' && !task.snoozed,
     },
   ];
   res.render('index', { sections, archivedTasks, tasks });
 };
+
 
 exports.startTask = (req, res) => {
   const taskId = parseInt(req.query.taskId, 10);
@@ -112,15 +117,26 @@ exports.unstartTask = (req, res) => {
 };
 
 exports.snoozeTask = (req, res) => {
-  const taskId = req.body.taskId;
-  const tasks = taskService.readTasksFromFile();
-  const task = tasks.find(task => task.id === taskId);
-
-  if (task) {
-    task.class = 'ARCHIVED';
-    task.snoozed = true;
-    taskService.saveTasksToFile(tasks);
+  const taskId = parseInt(req.query.taskId, 10);
+  if (isNaN(taskId)) {
+    res.status(400).send('taskId is required');
+    return;
   }
+
+  const tasks = taskService.readTasksFromFile();
+  const taskIndex = tasks.findIndex(task => task.id === taskId);
+
+  if (taskIndex === -1) {
+    res.status(404).send('Task not found');
+    return;
+  }
+
+  tasks[taskIndex].snoozed = true;
+  taskService.saveTasksToFile(tasks);
 
   res.redirect('/');
 };
+
+
+
+

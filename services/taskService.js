@@ -5,17 +5,21 @@ const tasksFilePath = path.join(__dirname, '..', 'data', 'tasks.json');
 
 function resetDailyTasks() {
   const tasks = readTasksFromFile();
+
   tasks.forEach(task => {
     if (task.class === 'DEFAULT') {
       task.status = 'UNSTARTED';
-    } else if (task.snoozed) {
+    }
+    if (task.snoozed) {
       task.class = 'CUSTOM';
       task.status = 'UNSTARTED';
       task.snoozed = false;
     }
   });
+
   saveTasksToFile(tasks);
 }
+
 
 
 function initializeTasksFile() {
