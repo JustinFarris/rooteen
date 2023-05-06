@@ -1,3 +1,6 @@
+tasks.json
+data/tasks.json
+
 # Logs
 logs
 *.log
