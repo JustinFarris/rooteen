@@ -2,11 +2,6 @@ const taskService = require('../services/taskService');
 
 exports.getTasks = (req, res) => {
   const tasks = taskService.readTasksFromFile();
-//  console.log('All tasks:', tasks); // Debug log
-
-  const archivedTasks = tasks.filter(task => task.class === 'ARCHIVED' || task.snoozed);
-//  console.log('Archived tasks:', archivedTasks); // Debug log
-
   const sections = [
     {
       title: 'Unstarted Tasks',
@@ -20,8 +15,12 @@ exports.getTasks = (req, res) => {
       title: 'Completed Tasks',
       filter: task => task.status === 'COMPLETED' && !task.snoozed && task.class !== 'ARCHIVED',
     },
+    {
+      title: 'Archived Tasks',
+      filter: task => task.class === 'ARCHIVED' || task.snoozed,
+    },
   ];
-  res.render('index', { sections, archivedTasks, tasks });
+  res.render('index', { sections, tasks });
 };
 
 

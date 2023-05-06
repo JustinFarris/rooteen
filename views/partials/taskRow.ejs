@@ -1,0 +1,22 @@
+<tr>
+    <td><%= task.id %></td>
+    <td><%= task.name %></td>
+    <td><%= task.class %></td>
+    <td><%= task.dateAdded %></td>
+    <td>
+        <% if (task.status === 'UNSTARTED') { %>
+            <a href="/start-task?taskId=<%= task.id %>">Start</a>
+        <% } else if (task.status === 'STARTED') { %>
+            <a href="/unstart-task?taskId=<%= task.id %>">Unstart</a>
+        <% } %>
+        <% if (task.status !== 'COMPLETED') { %>
+            <a href="/complete-task?taskId=<%= task.id %>">Complete</a>
+        <% } %>
+        <% if (task.class !== 'ARCHIVED') { %>
+            <a href="/snooze-task?taskId=<%= task.id %>">Snooze</a>
+            <a href="/delete-task?taskId=<%= task.id %>">Delete</a>
+        <% } else { %>
+            <a href="/readd-task?taskId=<%= task.id %>">Re-add</a>
+        <% } %>
+    </td>
+</tr>

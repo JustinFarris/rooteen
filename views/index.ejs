@@ -1,68 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/javascripts/sort.js"></script>
     <title>Task Manager</title>
-    <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-<h1>Task Manager</h1>
+<header>
+    <h1>Task Manager</h1>
+</header>
 
-<form action="/add-task" method="POST" style="margin-bottom: 30px;">
-    <input type="text" name="taskName" placeholder="Task name" required />
-    <button type="submit">ADD</button>
-</form>
+<div class="add-task-form">
+    <form action="/add-task" method="POST">
+        <label for="taskName">Add Task:</label>
+        <input type="text" id="taskName" name="taskName" required>
+        <button type="submit">Add</button>
+    </form>
+</div>
 
-<% sections.forEach(section => { %>
-    <h2><%= section.title %></h2>
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>Status</th>
-            <th>Date Added</th>
-            <th>Actions</th>
-        </tr>
-        <% tasks.filter(section.filter).forEach(task => { %>
-            <tr>
-                <td><%= task.name %></td>
-                <td><%= task.status %></td>
-                <td><%= task.dateAdded %></td>
-                <td>
-                    <% if (task.status === 'UNSTARTED') { %>
-                        <a href="/start-task?taskId=<%= task.id %>">START</a>
-                        <a href="/snooze-task?taskId=<%= task.id %>">SNOOZE</a>
-                    <% } else if (task.status === 'STARTED') { %>
-                        <a href="/unstart-task?taskId=<%= task.id %>">UNSTART</a>
-                        <a href="/complete-task?taskId=<%= task.id %>">COMPLETE</a>
-                    <% } else if (task.status === 'COMPLETED') { %>
-                        <a href="/unstart-task?taskId=<%= task.id %>">UNSTART</a>
-                    <% } %>
-                </td>
-            </tr>
-        <% }) %>
-    </table>
-<% }) %>
-
-<h2>Archived Tasks</h2>
-<table>
-    <tr>
-        <th>Name</th>
-        <th>Status</th>
-        <th>Date Added</th>
-        <th>Actions</th>
-    </tr>
-    <% archivedTasks.forEach(task => { %>
-        <tr>
-            <td><%= task.name %></td>
-            <td><%= task.status %></td>
-            <td><%= task.dateAdded %></td>
-            <td>
-                <a href="/readd-task?taskId=<%= task.id %>">RE-ADD</a>
-                <a href="/delete-task?taskId=<%= task.id %>">DELETE</a>
-            </td>
-        </tr>
+<main>
+    <% sections.forEach(section => { %>
+        <section>
+            <h2><%= section.title %></h2>
+            <table id="<%= section.title.split(' ').join('-') %>">
+                <thead>
+                <tr>
+                    <th onclick="sortTable(0, '<%= section.title.split(' ').join('-') %>')">ID</th>
+                    <th onclick="sortTable(1, '<%= section.title.split(' ').join('-') %>')">Task</th>
+                    <th onclick="sortTable(2, '<%= section.title.split(' ').join('-') %>')">Class</th>
+                    <th onclick="sortTable(3, '<%= section.title.split(' ').join('-') %>')">Date Added</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <% tasks.filter(section.filter).forEach(task => { %>
+                    <%- include('partials/taskRow', { task }) %>
+                <% }) %>
+                </tbody>
+            </table>
+        </section>
     <% }) %>
-</table>
-
-<script src="/javascripts/sort.js"></script>
+</main>
 </body>
 </html>
