@@ -33,3 +33,19 @@ tr:hover {
   background-color: #ddd;
 }
 
+/* Add these lines to your styles.css file */
+.unstarted-task {
+  color: blue;
+}
+
+.unstarted-task.default-task {
+  color: red;
+}
+
+.started-task {
+  color: orange;
+}
+
+.completed-task {
+  color: green;
+}

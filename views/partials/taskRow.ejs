@@ -1,6 +1,6 @@
 <tr>
     <td><%= task.id %></td>
-    <td><%= task.name %></td>
+    <td class="<%= task.status.toLowerCase() %>-task<% if (task.class === 'DEFAULT' && task.status === 'UNSTARTED') { %> default-task<% } %>"><%= task.name %></td>
     <td><%= task.class %></td>
     <td><%= task.dateAdded %></td>
     <td>
