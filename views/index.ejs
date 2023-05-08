@@ -8,9 +8,10 @@
     <title>Task Manager</title>
 </head>
 <body>
-<header>
-    <h1>Task Manager</h1>
-</header>
+<% if (isDev) { %>
+    <div style="font-weight: bold; color: red;">***DEV***</div>
+<% } %>
+<h1>Task Manager</h1>
 
 <div class="add-task-form">
     <form action="/add-task" method="POST">
