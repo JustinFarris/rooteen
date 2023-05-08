@@ -8,23 +8,19 @@
     <td><%= task.dateAdded %></td>
     <td>
         <% if (task.status === 'UNSTARTED') { %>
-            <a href="/start-task?taskId=<%= task.id %>">Start</a>
+            <a href="/start-task?taskId=<%= task.id %>" class="action-button">Start</a>
         <% } else if (task.status === 'STARTED') { %>
-            <a href="/unstart-task?taskId=<%= task.id %>">Unstart</a>
+            <a href="/unstart-task?taskId=<%= task.id %>" class="action-button">Unstart</a>
         <% } %>
         <% if (task.status !== 'COMPLETED') { %>
-            <a href="/complete-task?taskId=<%= task.id %>">Complete</a>
+            <a href="/complete-task?taskId=<%= task.id %>" class="action-button">Complete</a>
         <% } %>
-            <% if (task.class !== 'ARCHIVED') { %>
-                <% if (!task.snoozed) { %>
-                    <a href="/snooze-task?taskId=<%= task.id %>">Snooze</a>
-                <% } %>
-                <a href="/delete-task?taskId=<%= task.id %>">Delete</a>
-            <% } else { %>
-                <a href="/readd-task?taskId=<%= task.id %>">Re-add</a>
-                <% if (!task.snoozed) { %>
-                    <a href="/snooze-task?taskId=<%= task.id %>">Snooze</a>
-                <% } %>
-            <% } %>
+        <% if (!task.snoozed) { %>
+            <a href="/snooze-task?taskId=<%= task.id %>" class="action-button">Snooze</a>
+        <% } %>
+        <a href="/delete-task?taskId=<%= task.id %>" class="action-button">Delete</a>
+        <% if (task.class === 'ARCHIVED') { %>
+            <a href="/readd-task?taskId=<%= task.id %>" class="action-button">Re-add</a>
+        <% } %>
     </td>
 </tr>
