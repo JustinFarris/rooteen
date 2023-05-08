@@ -3,23 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/styles.css">
     <title>Edit Task</title>
 </head>
 <body>
-<header>
-    <h1>Edit Task</h1>
-</header>
+<h1>Edit Task: <%= task.name %></h1>
+<form action="/edit-task" method="POST">
+    <input type="hidden" name="taskId" value="<%= task.id %>">
+    <label for="taskName">Task Name:</label>
+    <input type="text" id="taskName" name="taskName" value="<%= task.name %>" required><br><br>
 
-<div class="edit-task-form">
-    <form action="/edit-task" method="POST">
-        <input type="hidden" name="taskId" value="<%= task.id %>">
-        <label for="taskName">Task Name:</label>
-        <input type="text" id="taskName" name="taskName" value="<%= task.name %>" required>
-        <button type="submit">Save</button>
-    </form>
-</div>
+    <label for="taskStatus">Status:</label>
+    <select id="taskStatus" name="taskStatus">
+        <option value="UNSTARTED" <%= task.status === 'UNSTARTED' ? 'selected' : '' %>>Unstarted</option>
+        <option value="STARTED" <%= task.status === 'STARTED' ? 'selected' : '' %>>Started</option>
+        <option value="COMPLETED" <%= task.status === 'COMPLETED' ? 'selected' : '' %>>Completed</option>
+    </select><br><br>
 
+    <label for="taskClass">Class:</label>
+    <select id="taskClass" name="taskClass">
+        <option value="DEFAULT" <%= task.class === 'DEFAULT' ? 'selected' : '' %>>Default</option>
+        <option value="CUSTOM" <%= task.class === 'CUSTOM' ? 'selected' : '' %>>Custom</option>
+        <option value="ARCHIVED" <%= task.class === 'ARCHIVED' ? 'selected' : '' %>>Archived</option>
+    </select><br><br>
+
+    <label for="taskSnoozed">Snoozed:</label>
+    <select id="taskSnoozed" name="taskSnoozed">
+        <option value="false" <%= !task.snoozed ? 'selected' : '' %>>No</option>
+        <option value="true" <%= task.snoozed ? 'selected' : '' %>>Yes</option>
+    </select><br><br>
+
+    <button type="submit">Save Changes</button>
+</form>
+<br>
 <a href="/">Back to Task Manager</a>
 </body>
 </html>

@@ -155,19 +155,24 @@ exports.resetTasks = (req, res) => {
 
 exports.updateTask = (req, res) => {
   const taskId = parseInt(req.body.taskId, 10);
+  const updatedTask = {
+    name: req.body.taskName,
+    status: req.body.taskStatus,
+    class: req.body.taskClass,
+    snoozed: req.body.taskSnoozed === 'true' ? true : false,
+  };
+
   let tasks = taskService.readTasksFromFile();
-  const taskIndex = tasks.findIndex(task => task.id === taskId);
-
-  if (taskIndex === -1) {
-    res.status(404).send('Task not found');
-    return;
-  }
-
-  tasks[taskIndex].name = req.body.taskName;
-  tasks[taskIndex].status = req.body.taskStatus;
-  tasks[taskIndex].class = req.body.taskClass || 'CUSTOM';
-
+  tasks.forEach(task => {
+    if (task.id === taskId) {
+      task.name = updatedTask.name;
+      task.status = updatedTask.status;
+      task.class = updatedTask.class;
+      task.snoozed = updatedTask.snoozed;
+    }
+  });
   taskService.saveTasksToFile(tasks);
 
   res.redirect('/');
 };
+
