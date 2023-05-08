@@ -1,4 +1,5 @@
 const express = require('express');
+const PORT = process.env.PORT || 3000;
 const taskRoutes = require('./routes/taskRoutes');
 
 const app = express();
@@ -22,6 +23,6 @@ app.set('view engine', 'ejs');
 
 app.use('/', taskRoutes);
 
-app.listen(3000, () => {
+app.listen(PORT, () => {
   console.log('Server is running on port 3000');
 });

@@ -1,6 +1,0 @@
-<div style="color: <%= task.color %>">
-    <%= task.name %>
-    <button onclick="if (confirmDelete()) { location.href='/delete-task?taskId=<%= task.id %>' }">DELETE</button>
-    <button onclick="location.href='/action?taskId=<%= task.id %>'"><%= task.action %></button>
-</div>
-
