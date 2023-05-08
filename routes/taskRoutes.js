@@ -11,5 +11,7 @@ router.get('/delete-task', taskController.deleteTask);
 router.get('/readd-task', taskController.readdTask);
 router.post('/add-task', taskController.addTask);
 router.get('/reset-tasks', taskController.resetTasks);
+router.get('/update-task', taskController.updateTask);
+router.get('/edit-task/:taskId', taskController.getEditTask);
 
 module.exports = router;

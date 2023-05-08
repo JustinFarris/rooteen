@@ -23,6 +23,18 @@ exports.getTasks = (req, res) => {
   res.render('index', { sections, tasks });
 };
 
+exports.getEditTask = (req, res) => {
+  const taskId = parseInt(req.params.taskId, 10);
+  const tasks = taskService.readTasksFromFile();
+  const task = tasks.find(task => task.id === taskId);
+
+  if (!task) {
+    res.status(404).send('Task not found');
+    return;
+  }
+
+  res.render('edit-task', { task });
+};
 
 exports.startTask = (req, res) => {
   const taskId = parseInt(req.query.taskId, 10);
@@ -138,5 +150,24 @@ exports.snoozeTask = (req, res) => {
 
 exports.resetTasks = (req, res) => {
   taskService.resetDailyTasks();
+  res.redirect('/');
+};
+
+exports.updateTask = (req, res) => {
+  const taskId = parseInt(req.body.taskId, 10);
+  let tasks = taskService.readTasksFromFile();
+  const taskIndex = tasks.findIndex(task => task.id === taskId);
+
+  if (taskIndex === -1) {
+    res.status(404).send('Task not found');
+    return;
+  }
+
+  tasks[taskIndex].name = req.body.taskName;
+  tasks[taskIndex].status = req.body.taskStatus;
+  tasks[taskIndex].class = req.body.taskClass || 'CUSTOM';
+
+  taskService.saveTasksToFile(tasks);
+
   res.redirect('/');
 };
