@@ -12,6 +12,12 @@ router.get('/readd-task', taskController.readdTask);
 router.post('/add-task', taskController.addTask);
 router.get('/reset-tasks', taskController.resetTasks);
 router.get('/edit-task/:taskId', taskController.getEditTask);
-router.post('/edit-task', taskController.updateTask);
+router.post('/edit-task', taskController.postEditTask);
+router.post('/delete-selected-tasks', (req, res) => {
+    console.log('req.body.taskIds:', req.body.taskIds);
+    taskController.deleteTasks(req, res);
+});
+
+
 
 module.exports = router;

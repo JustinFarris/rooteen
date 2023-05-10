@@ -1,54 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/styles.css">
-    <script src="/javascripts/sort.js"></script>
-    <title>Task Manager</title>
+    <title>Task Management</title>
+    <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-<% if (isDev) { %>
-    <div style="font-weight: bold; color: red;">***DEV***</div>
-<% } %>
-<h2>Task Manager</h2>
-<%
-const currentTime = new Date();
-const diffMs = currentTime - serverStartTime;
-const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-const diffMinutes = Math.floor((diffMs / (1000 * 60)) % 60);
-%>
-<p>Server started at <%= serverStartTime.toLocaleString() %> (<%= diffHours %>h <%= diffMinutes %>m ago)</p>
-<div class="add-task-form">
-    <form action="/add-task" method="POST">
-        <label for="taskName">Add Task:</label>
-        <input type="text" id="taskName" name="taskName" required>
-        <button type="submit">Add</button>
-    </form>
-</div>
-
-<main>
-    <% sections.forEach(section => { %>
-        <section>
-            <h2><%= section.title %></h2>
-            <table id="<%= section.title.split(' ').join('-') %>">
-                <thead>
-                <tr>
-                    <th onclick="sortTable(0, '<%= section.title.split(' ').join('-') %>')">ID</th>
-                    <th onclick="sortTable(1, '<%= section.title.split(' ').join('-') %>')">Task</th>
-                    <th onclick="sortTable(2, '<%= section.title.split(' ').join('-') %>')">Class</th>
-                    <th onclick="sortTable(3, '<%= section.title.split(' ').join('-') %>')">Date Added</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <% tasks.filter(section.filter).forEach(task => { %>
-                    <%- include('partials/taskRow', { task }) %>
-                <% }) %>
-                </tbody>
-            </table>
-        </section>
-    <% }) %>
-</main>
+<h1>Task Management</h1>
+<p>Server started at <%= startTime %> (<%= hoursRunning %> hours and <%= minutesRunning %> minutes ago)</p>
+<h2>Add Task</h2>
+<form action="/add-task" method="POST">
+    <input type="text" name="taskName" placeholder="Task name" required />
+    <button type="submit">Add Task</button>
+</form>
+<hr />
+<% sections.forEach(section => { %>
+    <h2><%= section.title %></h2>
+    <table id="<%= section.title %>">
+        <thead>
+        <tr>
+            <th onclick="sortTable(0, '<%= section.title %>')">
+                ID
+            </th>
+            <th onclick="sortTable(1, '<%= section.title %>')">
+                Title
+            </th>
+            <th onclick="sortTable(2, '<%= section.title %>')">
+                Description
+            </th>
+            <th onclick="sortTable(3, '<%= section.title %>')">
+                Status
+            </th>
+            <th onclick="sortTable(4, '<%= section.title %>')">
+                Actions
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <% section.tasks.forEach(task => { %>
+            <%- include('partials/taskRow', { task: task }) %>
+        <% }) %>
+        </tbody>
+    </table>
+    <% if (section.showDeleteSelected) { %>
+        <form id="delete-selected-tasks-form" action="/delete-selected-tasks" method="POST">
+            <button type="submit">DELETE SELECTED</button>
+        </form>
+    <% } %>
+<% }) %>
+<script src="/javascripts/main.js"></script>
+<script src="/javascripts/sort.js"></script>
 </body>
 </html>
+
+
+

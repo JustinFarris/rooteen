@@ -1,178 +1,220 @@
+const fs = require('fs');
+const path = require('path');
+const tasksFilePath = path.join(__dirname, '..', 'data', 'tasks.json');
+const tasks = require(tasksFilePath);
 const taskService = require('../services/taskService');
 
-exports.getTasks = (req, res) => {
-  const tasks = taskService.readTasksFromFile();
-  const sections = [
+const getTasks = (req, res) => {
+  const now = new Date();
+  const timeDifference = now - startTime;
+  const hoursRunning = Math.floor(timeDifference / (1000 * 60 * 60));
+  const minutesRunning = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+  const sections = getSections();
+  res.render('index', {
+    tasks: tasks,
+    sections: sections,
+    startTime: startTime,
+    hoursRunning: hoursRunning,
+    minutesRunning: minutesRunning
+  });
+};
+
+const getSections = () => {
+  return [
     {
-      title: 'Unstarted Tasks',
-      filter: task => task.status === 'UNSTARTED' && !task.snoozed && task.class !== 'ARCHIVED',
+      title: 'UNSTARTED',
+      tasks: tasks.filter(task => task.status === 'UNSTARTED' && task.class !== 'ARCHIVED')
     },
     {
-      title: 'Started Tasks',
-      filter: task => task.status === 'STARTED' && !task.snoozed && task.class !== 'ARCHIVED',
+      title: 'STARTED',
+      tasks: tasks.filter(task => task.status === 'STARTED' && task.class !== 'ARCHIVED')
     },
     {
-      title: 'Completed Tasks',
-      filter: task => task.status === 'COMPLETED' && !task.snoozed && task.class !== 'ARCHIVED',
+      title: 'COMPLETED',
+      tasks: tasks.filter(task => task.status === 'COMPLETED' && task.class !== 'ARCHIVED')
     },
     {
-      title: 'Archived Tasks',
-      filter: task => task.class === 'ARCHIVED' || task.snoozed,
-    },
+      title: 'ARCHIVED',
+      tasks: tasks.filter(task => task.class === 'ARCHIVED'),
+      showDeleteSelected: true
+    }
   ];
-  res.render('index', { sections, tasks });
 };
 
-exports.getEditTask = (req, res) => {
-  const taskId = parseInt(req.params.taskId, 10);
-  const tasks = taskService.readTasksFromFile();
-  const task = tasks.find(task => task.id === taskId);
-
-  if (!task) {
-    res.status(404).send('Task not found');
-    return;
-  }
-
-  res.render('edit-task', { task });
-};
-
-exports.startTask = (req, res) => {
+const startTask = (req, res) => {
   const taskId = parseInt(req.query.taskId, 10);
   let tasks = taskService.readTasksFromFile();
-  tasks.forEach(task => {
+
+  tasks = tasks.map(task => {
     if (task.id === taskId) {
       task.status = 'STARTED';
     }
+    return task;
   });
+
   taskService.saveTasksToFile(tasks);
   res.redirect('/');
 };
 
-exports.completeTask = (req, res) => {
+const unstartTask = (req, res) => {
   const taskId = parseInt(req.query.taskId, 10);
   let tasks = taskService.readTasksFromFile();
-  tasks.forEach(task => {
+
+  tasks = tasks.map(task => {
+    if (task.id === taskId) {
+      task.status = 'UNSTARTED';
+    }
+    return task;
+  });
+
+  taskService.saveTasksToFile(tasks);
+  res.redirect('/');
+};
+
+const completeTask = (req, res) => {
+  const taskId = parseInt(req.query.taskId, 10);
+  let tasks = taskService.readTasksFromFile();
+
+  tasks = tasks.map(task => {
     if (task.id === taskId) {
       task.status = 'COMPLETED';
     }
+    return task;
   });
+
   taskService.saveTasksToFile(tasks);
   res.redirect('/');
 };
 
-exports.addTask = (req, res) => {
-  const newTask = {
-    id: taskService.generateId(),
-    name: req.body.taskName,
-    status: 'UNSTARTED',
-    class: 'CUSTOM',
-    dateAdded: new Date().toISOString().split('T')[0]
-  };
+const snoozeTask = (req, res) => {
+  const taskId = parseInt(req.query.taskId, 10);
+  let tasks = taskService.readTasksFromFile();
 
-  const tasks = taskService.readTasksFromFile();
-  tasks.push(newTask);
+  tasks = tasks.map(task => {
+    if (task.id === taskId) {
+      task.snoozed = true;
+    }
+    return task;
+  });
+
   taskService.saveTasksToFile(tasks);
-
   res.redirect('/');
 };
 
-exports.saveTask = (req, res) => {
-  const newTask = {
-    id: taskService.generateId(),
-    name: req.body.taskName,
-    status: 'UNSTARTED',
-    class: req.body.taskClass || 'CUSTOM',
-    dateAdded: new Date().toISOString().split('T')[0]
-  };
-
-  const tasks = taskService.readTasksFromFile();
-  tasks.push(newTask);
-  taskService.saveTasksToFile(tasks);
-
-  res.redirect('/');
-};
-
-exports.deleteTask = (req, res) => {
+const deleteTask = (req, res) => {
   const taskId = parseInt(req.query.taskId, 10);
   let tasks = taskService.readTasksFromFile();
   tasks = tasks.filter(task => task.id !== taskId);
   taskService.saveTasksToFile(tasks);
-
   res.redirect('/');
 };
 
-exports.readdTask = (req, res) => {
+const readdTask = (req, res) => {
   const taskId = parseInt(req.query.taskId, 10);
   let tasks = taskService.readTasksFromFile();
-  tasks.forEach(task => {
+
+  tasks = tasks.map(task => {
     if (task.id === taskId) {
       task.class = 'CUSTOM';
-    }
-  });
-  taskService.saveTasksToFile(tasks);
-
-  res.redirect('/');
-};
-
-exports.unstartTask = (req, res) => {
-  const taskId = parseInt(req.query.taskId, 10);
-  let tasks = taskService.readTasksFromFile();
-  tasks.forEach(task => {
-    if (task.id === taskId) {
       task.status = 'UNSTARTED';
     }
+    return task;
   });
-  taskService.saveTasksToFile(tasks);
 
+  taskService.saveTasksToFile(tasks);
   res.redirect('/');
 };
 
-exports.snoozeTask = (req, res) => {
-  const taskId = parseInt(req.query.taskId, 10);
-  if (isNaN(taskId)) {
-    res.status(400).send('taskId is required');
-    return;
-  }
+const addTask = (req, res) => {
+  const taskName = req.body.taskName;
+  const newTask = {
+    id: taskService.generateId(),
+    name: taskName,
+    status: 'UNSTARTED',
+    class: 'CUSTOM',
+    dateAdded: new Date().toISOString().split('T')[0],
+  };
 
   const tasks = taskService.readTasksFromFile();
-  const taskIndex = tasks.findIndex(task => task.id === taskId);
-
-  if (taskIndex === -1) {
-    res.status(404).send('Task not found');
-    return;
-  }
-
-  tasks[taskIndex].snoozed = true;
+  tasks.push(newTask);
   taskService.saveTasksToFile(tasks);
 
   res.redirect('/');
 };
 
-exports.resetTasks = (req, res) => {
+const resetTasks = (req, res) => {
   taskService.resetDailyTasks();
   res.redirect('/');
 };
 
-exports.updateTask = (req, res) => {
+const getEditTask = async (req, res) => {
+  try {
+    const taskId = req.params.taskId;
+    const task = tasks.find((t) => t.id === parseInt(taskId));
+
+    if (!task) {
+      return res.status(404).send('Task not found');
+    }
+
+    res.render('edit-task', { task });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
+
+const postEditTask = (req, res) => {
   const taskId = parseInt(req.body.taskId, 10);
-  const updatedTask = {
-    name: req.body.taskName,
-    status: req.body.taskStatus,
-    class: req.body.taskClass,
-    snoozed: req.body.taskSnoozed === 'true' ? true : false,
-  };
+  const taskName = req.body.taskName;
+  const taskStatus = req.body.taskStatus;
+  const taskClass = req.body.taskClass;
+  const taskSnoozed = req.body.taskSnoozed === 'true';
 
   let tasks = taskService.readTasksFromFile();
-  tasks.forEach(task => {
+  tasks = tasks.map(task => {
     if (task.id === taskId) {
-      task.name = updatedTask.name;
-      task.status = updatedTask.status;
-      task.class = updatedTask.class;
-      task.snoozed = updatedTask.snoozed;
+      task.name = taskName;
+      task.status = taskStatus;
+      task.class = taskClass;
+      task.snoozed = taskSnoozed;
     }
+    return task;
   });
+
   taskService.saveTasksToFile(tasks);
+  res.redirect('/');
+};
+
+const deleteTasks = (req, res) => {
+  const taskIdsToDelete = req.body.taskIds;
+
+  console.log('taskIdsToDelete:', taskIdsToDelete);
+
+  if (taskIdsToDelete && Array.isArray(taskIdsToDelete)) {
+    const taskIdsToDeleteInt = taskIdsToDelete.map(taskId => parseInt(taskId));
+    let updatedTasks = tasks.filter((task) => !taskIdsToDeleteInt.includes(task.id));
+    taskService.saveTasksToFile(updatedTasks);
+  } else {
+    console.log('No taskIdsToDelete or not an array');
+  }
 
   res.redirect('/');
 };
+
+module.exports = {
+  getTasks,
+  addTask,
+  startTask,
+  unstartTask,
+  completeTask,
+  snoozeTask,
+  deleteTask,
+  readdTask,
+  resetTasks,
+  getEditTask,
+  postEditTask,
+  deleteTasks,
+};
+
 

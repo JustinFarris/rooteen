@@ -1,5 +1,10 @@
-<tr>
-    <td><%= task.id %></td>
+<tr id="task-row-<%= task.id %>">
+    <td>
+        <% if (task.class === 'ARCHIVED') { %>
+            <input type="checkbox" class="archived-task-checkbox" name="taskIds[]" value="<%= task.id %>">
+        <% } %>
+        <%= task.id %>
+    </td>
     <td class="<%= task.status.toLowerCase() %>-task<% if (task.class === 'DEFAULT' && task.status === 'UNSTARTED') { %> default-task<% } %>"
         onclick="window.location.href='/edit-task/<%= task.id %>'">
         <%= task.name %>
@@ -8,19 +13,23 @@
     <td><%= task.dateAdded %></td>
     <td>
         <% if (task.status === 'UNSTARTED') { %>
-            <a href="/start-task?taskId=<%= task.id %>" class="action-button">Start</a>
+            <a href="/start-task?taskId=<%= task.id %>">Start</a>
         <% } else if (task.status === 'STARTED') { %>
-            <a href="/unstart-task?taskId=<%= task.id %>" class="action-button">Unstart</a>
+            <a href="/unstart-task?taskId=<%= task.id %>">Unstart</a>
         <% } %>
         <% if (task.status !== 'COMPLETED') { %>
-            <a href="/complete-task?taskId=<%= task.id %>" class="action-button">Complete</a>
+            <a href="/complete-task?taskId=<%= task.id %>">Complete</a>
         <% } %>
-        <% if (!task.snoozed) { %>
-            <a href="/snooze-task?taskId=<%= task.id %>" class="action-button">Snooze</a>
-        <% } %>
-        <a href="/delete-task?taskId=<%= task.id %>" class="action-button">Delete</a>
-        <% if (task.class === 'ARCHIVED') { %>
-            <a href="/readd-task?taskId=<%= task.id %>" class="action-button">Re-add</a>
+        <% if (task.class !== 'ARCHIVED') { %>
+            <% if (!task.snoozed) { %>
+                <a href="/snooze-task?taskId=<%= task.id %>">Snooze</a>
+            <% } %>
+            <a href="/delete-task?taskId=<%= task.id %>">Delete</a>
+        <% } else { %>
+            <a href="/readd-task?taskId=<%= task.id %>">Re-add</a>
+            <% if (!task.snoozed) { %>
+                <a href="/snooze-task?taskId=<%= task.id %>">Snooze</a>
+            <% } %>
         <% } %>
     </td>
 </tr>

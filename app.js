@@ -1,12 +1,14 @@
 const createError = require('http-errors');
 const express = require('express');
-const startTime = new Date();
+global.startTime = new Date();
 const path = require('path');
 const logger = require('morgan');
+const bodyParser = require('body-parser');
 
 const taskRouter = require('./routes/taskRoutes');
 
 const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const port = process.env.PORT || 3000;
 

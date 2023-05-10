@@ -55,11 +55,18 @@ function generateId() {
   return maxId + 1;
 }
 
+function deleteTasks(taskIds) {
+  let tasks = readTasksFromFile();
+  tasks = tasks.filter((task) => !taskIds.includes(task.id));
+  saveTasksToFile(tasks);
+}
+
 module.exports = {
   initializeTasksFile,
   readTasksFromFile,
   saveTasksToFile,
   generateId,
-  resetDailyTasks
+  resetDailyTasks,
+  deleteTasks
 };
 
