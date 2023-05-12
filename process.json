@@ -1,0 +1,7 @@
+{
+  "watch": ["server", "client"],
+  "ignore_watch" : ["data","node_modules"],
+  "watch_options": {
+    "followSymlinks": false
+  }
+}
